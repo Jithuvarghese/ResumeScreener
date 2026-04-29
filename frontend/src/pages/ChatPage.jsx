@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDocumentStore } from '../hooks/useDocumentStore.js';
 import { chatMessage } from '../services/api.js';
+import { getRoleByValue } from '../utils/resumeRoles.js';
 
 export function ChatPage() {
   const { selectedRole } = useDocumentStore();
@@ -9,7 +10,8 @@ export function ChatPage() {
 
   useEffect(() => {
     // initial welcome
-    setMessages([{ from: 'bot', text: `Hi — I can run a quick interview for ${selectedRole}. Type 'interview' to get questions.` }]);
+    const roleLabel = getRoleByValue(selectedRole).label;
+    setMessages([{ from: 'bot', text: `Hi — I can run a quick interview for ${roleLabel}. Type 'interview' to get questions.` }]);
   }, [selectedRole]);
 
   const send = async (text) => {
@@ -19,8 +21,9 @@ export function ChatPage() {
       const res = await chatMessage({ role: selectedRole, message: text });
       const reply = res.response;
       if (Array.isArray(reply)) {
-        reply.forEach((q) => setMessages((m) => [...m, { from: 'bot', text: q }]));
-      } else if (reply && reply.response) {
+        // append all questions in one update
+        setMessages((m) => [...m, ...reply.map((q) => ({ from: 'bot', text: q }))]);
+      } else if (reply && typeof reply === 'object') {
         setMessages((m) => [...m, { from: 'bot', text: JSON.stringify(reply) }]);
       } else {
         setMessages((m) => [...m, { from: 'bot', text: String(reply) }]);

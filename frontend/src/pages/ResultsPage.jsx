@@ -6,7 +6,7 @@ import { formatNumber, truncate } from '../utils/format.js';
 import { ChartCard } from '../components/ChartCard.jsx';
 import { ScoreCard } from '../components/ScoreCard.jsx';
 import { SkillsList } from '../components/SkillsList.jsx';
-import { getRoleByValue } from '../utils/resumeRoles.js';
+import { getRoleByValue, flattenRoleSkills } from '../utils/resumeRoles.js';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip, Legend);
 
@@ -26,6 +26,7 @@ export function ResultsPage() {
   const matchedCount = latestResult.skillsFound.length;
   const missingCount = latestResult.missingSkills.length;
   const roleProfile = getRoleByValue(latestResult.roleKey);
+  const allSkills = flattenRoleSkills(roleProfile);
   const pieData = {
     labels: ['Skills Found', 'Missing Skills'],
     datasets: [
@@ -38,11 +39,11 @@ export function ResultsPage() {
   };
 
   const barData = {
-    labels: roleProfile.skills,
+    labels: allSkills,
     datasets: [
       {
         label: 'Skill match',
-        data: roleProfile.skills.map((skill) => (latestResult.skillsFound.some((item) => item.toLowerCase() === skill.toLowerCase()) ? 1 : 0)),
+        data: allSkills.map((skill) => (latestResult.skillsFound.some((item) => item.toLowerCase() === skill.toLowerCase()) ? 1 : 0)),
         backgroundColor: '#0f766e',
         borderRadius: 12,
       },
@@ -119,8 +120,41 @@ export function ResultsPage() {
       </section>
 
       <section className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-        <SkillsList title="Skills found" items={latestResult.skillsFound} tone="found" emptyText="No skills matched this resume." />
-        <SkillsList title="Missing skills" items={latestResult.missingSkills} tone="missing" emptyText="Nothing missing - this is a strong match." />
+        <article className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
+          <h3 className="mb-4 text-lg font-semibold">Categorized skill breakdown</h3>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {['primarySkills', 'secondarySkills', 'tools', 'softSkills', 'keywords'].map((cat) => {
+              const items = roleProfile[cat] || [];
+              const found = items.filter((s) => latestResult.skillsFound.some((f) => f.toLowerCase() === s.toLowerCase()));
+              const missing = items.filter((s) => !latestResult.skillsFound.some((f) => f.toLowerCase() === s.toLowerCase()));
+
+              return (
+                <div key={cat} className="rounded-2xl border border-slate-100 p-4">
+                  <p className="text-sm font-medium text-slate-500">{cat.replace(/([A-Z])/g, ' $1').replace(/^./, (c) => c.toUpperCase())}</p>
+                  <div className="mt-2">
+                    <p className="text-xs text-slate-500">Found: {found.length}</p>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {found.map((s) => (
+                        <span key={s} className="rounded-full bg-emerald-50 px-3 py-1 text-sm font-medium text-emerald-700">{s}</span>
+                      ))}
+                      {found.length === 0 && <p className="text-sm text-slate-500">—</p>}
+                    </div>
+
+                    <p className="mt-3 text-xs text-slate-500">Missing: {missing.length}</p>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {missing.map((s) => (
+                        <span key={s} className="rounded-full bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">{s}</span>
+                      ))}
+                      {missing.length === 0 && <p className="text-sm text-slate-500">—</p>}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </article>
+
+        <SkillsList title="All missing skills" items={latestResult.missingSkills} tone="missing" emptyText="Nothing missing - this is a strong match." />
       </section>
 
       <section className="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-soft">
