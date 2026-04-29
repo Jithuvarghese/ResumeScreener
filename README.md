@@ -89,6 +89,48 @@ cd java-api
 mvn spring-boot:run
 ```
 
+## Quick run (full stack)
+
+Run these three commands in separate terminals to start the app locally (recommended order):
+
+```powershell
+cd "C:\Users\user\Documents\Smart Doc\java-api"
+mvn -DskipTests spring-boot:run
+
+cd "C:\Users\user\Documents\Smart Doc\backend-node"
+npm install
+node server.js
+
+cd "C:\Users\user\Documents\Smart Doc\frontend"
+npm install
+npm run dev
+```
+
+Notes:
+- The Node gateway listens on `http://localhost:3001` and forwards to the Java API by default (`http://localhost:8081`).
+- The frontend dev server runs at `http://localhost:5173` by default.
+
+## Test the endpoints
+
+Sample quick tests (use these from the project root):
+
+```bash
+# Test gateway -> Java API (resume analysis)
+curl -v -F "file=@temp_resume.txt" -F "role=Frontend Developer" http://localhost:3001/api/analyze/resume
+
+# Direct call to Java API (if you skip gateway)
+curl -v -F "file=@temp_resume.txt" -F "role=Frontend Developer" http://localhost:8081/api/analyze/resume
+
+# Chat endpoint (returns role-specific questions)
+curl -v -H "Content-Type: application/json" -d '{"role":"frontend-developer","message":"interview"}' http://localhost:8081/api/chat
+```
+
+## Development notes
+
+- Role definitions are in `frontend/src/utils/resumeRoles.js` and `java-api/src/main/java/com/smartdoc/processing/model/ResumeRole.java` and should be kept in sync.
+- To update role keywords, edit both locations or extend the API to load roles from a shared JSON file.
+- The chat endpoint is a simple rule-based generator in `ChatService` and returns an array of questions when asked for an interview.
+
 ## Example Request Flow
 
 1. The React app uploads a PDF or text file.
