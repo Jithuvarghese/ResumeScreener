@@ -26,9 +26,9 @@ export function FileUploader({ file, onFileSelected, isUploading, progress }) {
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-ink text-white">
           {isUploading ? <LoaderCircle className="animate-spin" size={24} /> : <FileUp size={24} />}
         </div>
-        <h3 className="text-xl font-semibold text-ink">Drag and drop a PDF or text file</h3>
-        <p className="mt-2 text-sm text-slate-500">Drop a file here or click to browse your device.</p>
-        <p className="mt-3 text-xs uppercase tracking-[0.24em] text-slate-400">Accepted: .pdf, .txt</p>
+        <h3 className="text-xl font-semibold text-ink">Drag and drop a resume file</h3>
+        <p className="mt-2 text-sm text-slate-500">Drop a PDF, DOC, DOCX, or TXT file here or click to browse your device.</p>
+        <p className="mt-3 text-xs uppercase tracking-[0.24em] text-slate-400">Accepted: .pdf, .doc, .docx, .txt</p>
       </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white p-4">
@@ -39,7 +39,7 @@ export function FileUploader({ file, onFileSelected, isUploading, progress }) {
           </div>
           <div className="flex items-center gap-2 text-sm text-emerald-600">
             <ShieldCheck size={16} />
-            Ready for processing
+            Ready for screening
           </div>
         </div>
 

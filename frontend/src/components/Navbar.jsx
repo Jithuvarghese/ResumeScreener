@@ -1,8 +1,7 @@
 import { NavLink } from 'react-router-dom';
-import { Sparkles, Upload, LayoutDashboard, FileText } from 'lucide-react';
+import { Sparkles, Upload, FileText } from 'lucide-react';
 
 const navItems = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/upload', label: 'Upload', icon: Upload },
   { to: '/results', label: 'Results', icon: FileText },
 ];
@@ -16,8 +15,8 @@ export function Navbar() {
             <Sparkles size={20} />
           </div>
           <div>
-            <p className="text-xs uppercase tracking-[0.28em] text-slate-500">Smart Doc</p>
-            <h1 className="text-lg font-semibold text-ink">Document Insights Dashboard</h1>
+            <p className="text-xs uppercase tracking-[0.28em] text-slate-500">Resume Screener</p>
+            <h1 className="text-lg font-semibold text-ink">Resume Screening & Match Analysis</h1>
           </div>
         </div>
 

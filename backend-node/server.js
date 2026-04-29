@@ -20,17 +20,17 @@ app.get('/health', (_request, response) => {
   response.json({ status: 'ok', service: 'node-gateway' });
 });
 
-app.post('/api/process', upload.single('file'), async (request, response, next) => {
+app.post('/api/analyze/resume', upload.single('file'), async (request, response, next) => {
   try {
     const documentFile = request.file;
-    const documentType = request.query.type || request.body.type;
+    const role = request.query.role || request.body.role;
 
     if (!documentFile) {
       return response.status(400).json({ message: 'A file upload is required.' });
     }
 
-    if (!documentType) {
-      return response.status(400).json({ message: 'A document type is required.' });
+    if (!role) {
+      return response.status(400).json({ message: 'A job role is required.' });
     }
 
     const formData = new FormData();
@@ -39,7 +39,8 @@ app.post('/api/process', upload.single('file'), async (request, response, next) 
       contentType: documentFile.mimetype,
     });
 
-    const upstreamUrl = `${javaApiBaseUrl}/api/process/${documentType}`;
+    const upstreamUrl = `${javaApiBaseUrl}/api/analyze/resume`;
+    formData.append('role', role);
     const upstreamResponse = await axios.post(upstreamUrl, formData, {
       headers: {
         ...formData.getHeaders(),

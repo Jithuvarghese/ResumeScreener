@@ -1,23 +1,22 @@
 import axios from 'axios';
 
 const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001').replace(/\/$/, '');
-const routeMode = import.meta.env.VITE_API_ROUTE_MODE || 'gateway';
 
 const httpClient = axios.create({
   baseURL: apiBaseUrl,
   timeout: 120000,
 });
 
-export function getEndpoint(type) {
-  return routeMode === 'direct' ? `/api/process/${type}` : `/api/process?type=${type}`;
+export function getEndpoint() {
+  return '/api/analyze/resume';
 }
 
-export async function processDocument({ file, type, onUploadProgress }) {
+export async function analyzeResume({ file, role, onUploadProgress }) {
   const formData = new FormData();
   formData.append('file', file);
-  formData.append('type', type);
+  formData.append('role', role);
 
-  const response = await httpClient.post(getEndpoint(type), formData, {
+  const response = await httpClient.post(getEndpoint(), formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
