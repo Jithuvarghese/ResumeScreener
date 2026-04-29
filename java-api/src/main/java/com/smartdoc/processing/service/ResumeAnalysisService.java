@@ -26,23 +26,59 @@ public class ResumeAnalysisService {
   public ResumeAnalysisResult analyzeResume(MultipartFile file, String roleValue) {
     ResumeRole role = ResumeRole.fromValue(roleValue);
     String extractedText = extractText(file);
-    List<String> skillsFound = matchSkills(extractedText, role.getSkills());
-    List<String> missingSkills = role.getSkills().stream()
-        .filter(skill -> skillsFound.stream().noneMatch(found -> found.equalsIgnoreCase(skill)))
-        .collect(Collectors.toList());
 
-    int matchScore = Math.round((skillsFound.size() * 100.0f) / role.getSkills().size());
+    // Weighted matching across categories
+    List<String> primary = role.getCategory("primary");
+    List<String> secondary = role.getCategory("secondary");
+    List<String> tools = role.getCategory("tools");
+    List<String> soft = role.getCategory("soft");
+    List<String> keywords = role.getCategory("keywords");
+
+    Set<String> found = new LinkedHashSet<>();
+    float score = 0f;
+
+    List<String> foundPrimary = matchSkills(extractedText, primary);
+    found.addAll(foundPrimary);
+    score += foundPrimary.size() * 1.0f; // weight 1.0
+
+    List<String> foundSecondary = matchSkills(extractedText, secondary);
+    found.addAll(foundSecondary);
+    score += foundSecondary.size() * 0.6f; // weight 0.6
+
+    List<String> foundTools = matchSkills(extractedText, tools);
+    found.addAll(foundTools);
+    score += foundTools.size() * 0.5f; // weight 0.5
+
+    List<String> foundSoft = matchSkills(extractedText, soft);
+    found.addAll(foundSoft);
+    score += foundSoft.size() * 0.3f; // weight 0.3
+
+    List<String> foundKeywords = matchSkills(extractedText, keywords);
+    found.addAll(foundKeywords);
+    score += foundKeywords.size() * 0.2f; // weight 0.2
+
+    List<String> skillsFound = new ArrayList<>(found);
+
+    // Compute possible max score for normalization
+    float maxPossible = primary.size() * 1.0f + secondary.size() * 0.6f + tools.size() * 0.5f + soft.size() * 0.3f + keywords.size() * 0.2f;
+    int matchScore = maxPossible > 0 ? Math.round((score / maxPossible) * 100.0f) : 0;
     String recommendation = recommendationForScore(matchScore);
     int experienceEstimate = estimateExperienceYears(extractedText, skillsFound.size());
 
+    // Build missing list as items from all categories not found
+    List<String> allRoleSkills = role.getAllSkills();
+    List<String> missingSkills = allRoleSkills.stream()
+      .filter(skill -> skillsFound.stream().noneMatch(foundSkill -> foundSkill.equalsIgnoreCase(skill)))
+      .collect(Collectors.toList());
+
     return new ResumeAnalysisResult(
       normalizeRoleKey(roleValue),
-        role.getLabel(),
-        matchScore,
-        skillsFound,
-        missingSkills,
-        experienceEstimate,
-        recommendation);
+      role.getLabel(),
+      matchScore,
+      skillsFound,
+      missingSkills,
+      experienceEstimate,
+      recommendation);
   }
 
   private String extractText(MultipartFile file) {

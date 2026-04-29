@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import { Navbar } from './components/Navbar.jsx';
 import { ResultsPage } from './pages/ResultsPage.jsx';
 import { UploadPage } from './pages/UploadPage.jsx';
+import { ChatPage } from './pages/ChatPage.jsx';
 
 export default function App() {
   return (
@@ -12,6 +13,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/upload" replace />} />
           <Route path="/upload" element={<UploadPage />} />
+            <Route path="/chat" element={<ChatPage />} />
           <Route path="/results" element={<ResultsPage />} />
           <Route path="*" element={<Navigate to="/upload" replace />} />
         </Routes>

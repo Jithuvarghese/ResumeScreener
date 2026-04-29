@@ -1,9 +1,10 @@
 import { NavLink } from 'react-router-dom';
-import { Sparkles, Upload, FileText } from 'lucide-react';
+import { Sparkles, Upload, FileText, MessageSquare } from 'lucide-react';
 
 const navItems = [
   { to: '/upload', label: 'Upload', icon: Upload },
   { to: '/results', label: 'Results', icon: FileText },
+  { to: '/chat', label: 'Interview', icon: MessageSquare },
 ];
 
 export function Navbar() {

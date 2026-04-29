@@ -51,3 +51,8 @@ export async function healthCheck() {
     return false;
   }
 }
+
+export async function chatMessage({ role, message }) {
+  const response = await httpClient.post('/api/chat', { role, message });
+  return response.data;
+}
