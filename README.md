@@ -125,6 +125,22 @@ curl -v -F "file=@temp_resume.txt" -F "role=Frontend Developer" http://localhost
 curl -v -H "Content-Type: application/json" -d '{"role":"frontend-developer","message":"interview"}' http://localhost:8081/api/chat
 ```
 
+
+## Python RAG service (local, optional)
+
+This project includes a local RAG chat service under `python-service/` that can run without OpenAI. To start it:
+
+```powershell
+cd "C:\Users\user\Documents\Smart Doc\python-service"
+python -m venv .venv
+.venv\Scripts\Activate.ps1    # PowerShell (Windows)
+# or: .venv\Scripts\activate.bat for cmd.exe, or `source .venv/bin/activate` on macOS/Linux
+pip install -r requirements.txt
+uvicorn app:app --host 127.0.0.1 --port 8800 --reload
+```
+
+Once running, the gateway will forward chat requests to `http://localhost:8800` when you use the app chat UI. The gateway also attempts to auto-index resume text into the Python service after analysis.
+
 ## Development notes
 
 - Role definitions are in `frontend/src/utils/resumeRoles.js` and `java-api/src/main/java/com/smartdoc/processing/model/ResumeRole.java` and should be kept in sync.
