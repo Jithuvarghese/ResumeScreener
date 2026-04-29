@@ -11,6 +11,7 @@ const app = express();
 const upload = multer({ storage: multer.memoryStorage() });
 const port = Number(process.env.PORT || 3001);
 const javaApiBaseUrl = (process.env.JAVA_API_BASE_URL || 'http://localhost:8081').replace(/\/$/, '');
+const pythonChatBaseUrl = (process.env.PYTHON_CHAT_BASE_URL || 'http://localhost:8800').replace(/\/$/, '');
 
 app.use(cors());
 app.use(express.json());
@@ -47,6 +48,21 @@ app.post('/api/analyze/resume', upload.single('file'), async (request, response,
       },
       maxContentLength: Infinity,
       maxBodyLength: Infinity,
+      timeout: 120000,
+    });
+
+    return response.status(upstreamResponse.status).json(upstreamResponse.data);
+  } catch (error) {
+    return next(error);
+  }
+});
+
+// Chat proxy to local Python RAG service (or other chat service)
+app.post('/api/chat', async (request, response, next) => {
+  try {
+    const upstreamUrl = `${pythonChatBaseUrl}/chat`;
+    const upstreamResponse = await axios.post(upstreamUrl, request.body, {
+      headers: { 'Content-Type': 'application/json' },
       timeout: 120000,
     });
 
