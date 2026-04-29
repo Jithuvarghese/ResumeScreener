@@ -78,7 +78,8 @@ public class ResumeAnalysisService {
       skillsFound,
       missingSkills,
       experienceEstimate,
-      recommendation);
+      recommendation,
+      extractedText);
   }
 
   private String extractText(MultipartFile file) {

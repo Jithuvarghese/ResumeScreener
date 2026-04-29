@@ -51,6 +51,19 @@ app.post('/api/analyze/resume', upload.single('file'), async (request, response,
       timeout: 120000,
     });
 
+    // If Java API returned extracted text, send it to the Python RAG service to index
+    try {
+      const extracted = upstreamResponse.data?.extractedText;
+      if (extracted) {
+        await axios.post(`${pythonChatBaseUrl}/add_doc`, {
+          title: documentFile.originalname || 'resume',
+          text: extracted,
+        }, { headers: { 'Content-Type': 'application/json' }, timeout: 120000 });
+      }
+    } catch (err) {
+      console.warn('Failed to index resume in python service:', err.message || err);
+    }
+
     return response.status(upstreamResponse.status).json(upstreamResponse.data);
   } catch (error) {
     return next(error);

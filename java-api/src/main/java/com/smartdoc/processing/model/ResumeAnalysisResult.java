@@ -10,11 +10,12 @@ public class ResumeAnalysisResult {
   private List<String> missingSkills;
   private int experienceEstimate;
   private String recommendation;
+  private String extractedText;
 
   public ResumeAnalysisResult() {
   }
 
-  public ResumeAnalysisResult(String roleKey, String role, int matchScore, List<String> skillsFound, List<String> missingSkills, int experienceEstimate, String recommendation) {
+  public ResumeAnalysisResult(String roleKey, String role, int matchScore, List<String> skillsFound, List<String> missingSkills, int experienceEstimate, String recommendation, String extractedText) {
     this.roleKey = roleKey;
     this.role = role;
     this.matchScore = matchScore;
@@ -22,6 +23,7 @@ public class ResumeAnalysisResult {
     this.missingSkills = missingSkills;
     this.experienceEstimate = experienceEstimate;
     this.recommendation = recommendation;
+    this.extractedText = extractedText;
   }
 
   public String getRoleKey() {
@@ -78,5 +80,13 @@ public class ResumeAnalysisResult {
 
   public void setRecommendation(String recommendation) {
     this.recommendation = recommendation;
+  }
+
+  public String getExtractedText() {
+    return extractedText;
+  }
+
+  public void setExtractedText(String extractedText) {
+    this.extractedText = extractedText;
   }
 }
