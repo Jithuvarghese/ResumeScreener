@@ -9,7 +9,7 @@ import { RESUME_ROLES, getRoleByValue } from '../utils/resumeRoles.js';
 
 export function UploadPage() {
   const navigate = useNavigate();
-  const { setLatestResult, selectedRole, setRole } = useDocumentStore();
+  const { saveResult, selectedRole, setRole } = useDocumentStore();
   const [file, setFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -34,7 +34,7 @@ export function UploadPage() {
         onUploadProgress: setProgress,
       });
 
-      setLatestResult(result);
+      saveResult(result);
       toast.success(`Analyzed ${result.role} successfully.`);
       navigate('/results');
     } catch (uploadError) {
